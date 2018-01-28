@@ -9,7 +9,7 @@ to run a VPS, nor do I have the inclination to go around trying to recruit peopl
 
 The frontend half of Beluga Foundry will appear closer to the end of the year or early next year, depending on what
 other projects I have brewing and how busy I am at work. The intention is to return JSON from the controllers and have
-something like Angular2 consume it to build pages.
+something like Angular consume it to build pages.
 
 Beluga Foundry is 100% a Java project (most pet sites run off of PHP, it seems), using Spring for dependency injection,
 Maven for builds/dependencies, and Shiro for authentication and authorization. It runs without a web.xml, so no need to
