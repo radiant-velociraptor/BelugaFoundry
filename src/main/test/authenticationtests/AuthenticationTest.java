@@ -18,6 +18,9 @@ import org.springframework.web.context.WebApplicationContext;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
+import static org.hamcrest.Matchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+
 /**
  * @author tmblount
  */
@@ -49,6 +52,26 @@ public class AuthenticationTest
         mockMvc.perform(post("/login")
                                 .param("username", "Mel")
                                 .param("password", "Mel"))
+                                .andExpect(jsonPath("$.loginMessage", is("OK")))
+                                .andExpect(jsonPath("$.userName", is("Mel")))
+                .andDo(print());
+    }
+
+    @Test
+    public void testLoginWrongPassword() throws Exception
+    {
+        mockMvc.perform(post("/login")
+                                .param("username", "Mel")
+                                .param("password", "wronglol"))
+                .andDo(print());
+    }
+
+    @Test
+    public void testLoginAccountNotFound() throws Exception
+    {
+        mockMvc.perform(post("/login")
+                                .param("username", "DoesNotExist")
+                                .param("password", "Fake"))
                 .andDo(print());
     }
 }
