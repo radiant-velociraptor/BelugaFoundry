@@ -63,6 +63,8 @@ public class AuthenticationTest
         mockMvc.perform(post("/login")
                                 .param("username", "Mel")
                                 .param("password", "wronglol"))
+                                .andExpect(jsonPath("$.loginMessage", is("The username/password combination is incorrect.")))
+                                .andExpect(jsonPath("$.userName", is("Mel")))
                 .andDo(print());
     }
 
@@ -72,6 +74,8 @@ public class AuthenticationTest
         mockMvc.perform(post("/login")
                                 .param("username", "DoesNotExist")
                                 .param("password", "Fake"))
+                                .andExpect(jsonPath("$.loginMessage", is("This username isn't in our system.")))
+                                .andExpect(jsonPath("$.userName", is("DoesNotExist")))
                 .andDo(print());
     }
 }
