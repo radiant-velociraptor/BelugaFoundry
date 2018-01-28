@@ -25,7 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author tmblount
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {DatabaseConfig.class, ShiroConfig.class, SpringWebJavaConfig.class})
+@ContextConfiguration(classes = {ShiroConfig.class, SpringWebJavaConfig.class})
 @WebAppConfiguration
 public class AuthenticationTest
 {
