@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import service.AuthenticationService;
 import service.SubjectService;
-import views.AuthenticationView;
+import views.authorization.AuthenticationView;
 
 /**
  * @author tmblount
@@ -51,7 +51,9 @@ public class AuthenticationServiceImpl implements AuthenticationService
 
                 LOGGER.debug("Login for [{}] was successful.", username);
 
-                new AuthenticationView(username);
+                // TODO retrieve user info
+
+                return new AuthenticationView(username);
             }
             catch (UnknownAccountException unaex)
             {
@@ -81,8 +83,17 @@ public class AuthenticationServiceImpl implements AuthenticationService
     }
 
     @Override
-    public AuthenticationView logout(Subject user)
+    public AuthenticationView logout(String username)
     {
-        return null;
+        // Get the current subject
+        Subject currentUser = subjectService.getLoginSubject();
+
+        AuthenticationView logoutView = new AuthenticationView(username);
+
+        logoutView.setLoginMessage("Logout success");
+
+        currentUser.logout();
+
+        return logoutView;
     }
 }

@@ -1,4 +1,4 @@
-package web.controller;
+package web.controller.authorization;
 
 import org.springframework.stereotype.Controller;
 

@@ -15,6 +15,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
@@ -76,6 +77,23 @@ public class AuthenticationTest
                                 .param("password", "Fake"))
                                 .andExpect(jsonPath("$.loginMessage", is("This username isn't in our system.")))
                                 .andExpect(jsonPath("$.userName", is("DoesNotExist")))
+                .andDo(print());
+    }
+
+    @Test
+    public void testLogoutAccount() throws Exception
+    {
+        mockMvc.perform(post("/login")
+                                .param("username", "Mel")
+                                .param("password", "Mel"))
+                .andExpect(jsonPath("$.loginMessage", is("OK")))
+                .andExpect(jsonPath("$.userName", is("Mel")))
+                .andDo(print());
+
+        mockMvc.perform(get("/logout")
+                                .param("username", "Mel"))
+                .andExpect(jsonPath("$.loginMessage", is("Logout success")))
+                .andExpect(jsonPath("$.userName", is("Mel")))
                 .andDo(print());
     }
 }

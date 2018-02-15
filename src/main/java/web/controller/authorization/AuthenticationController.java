@@ -1,4 +1,4 @@
-package web.controller;
+package web.controller.authorization;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import service.AuthenticationService;
-import views.AuthenticationView;
+import views.authorization.AuthenticationView;
 
 /**
  * @author tmblount
@@ -26,5 +26,14 @@ public class AuthenticationController
     )
     {
         return authenticationService.logIn(username, password);
+    }
+
+    @RequestMapping(value = "/logout", method = RequestMethod.GET)
+    @ResponseBody
+    public AuthenticationView logout(
+            @RequestParam(value = "username", required = true) String username
+    )
+    {
+        return authenticationService.logout(username);
     }
 }
