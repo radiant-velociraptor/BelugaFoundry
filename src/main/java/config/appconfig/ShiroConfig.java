@@ -1,7 +1,6 @@
 package config.appconfig;
 
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
 import org.apache.shiro.authc.credential.SimpleCredentialsMatcher;
 import org.apache.shiro.mgt.DefaultSecurityManager;
 import org.apache.shiro.mgt.SecurityManager;
@@ -11,55 +10,36 @@ import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.filter.authc.AnonymousFilter;
 import org.apache.shiro.web.filter.authc.FormAuthenticationFilter;
 import org.apache.shiro.web.filter.authc.LogoutFilter;
-import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.DependsOn;
-import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.*;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
+import org.hibernate.SessionFactory;
 
 import javax.servlet.Filter;
 import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * @author tmblount
  */
 @Configuration
-@PropertySource("classpath:mysql.properties")
+@PropertySource("classpath:shiro.properties")
+@Import({DatabaseConfig.class})
 public class ShiroConfig
 {
-    @Value("${mysql.db}")
-    private String mysqlDb;
-
-    @Value("${mysql.user}")
-    private String user;
-
-    @Value("${mysql.password}")
-    private String password;
+    @Autowired
+    private DataSource dataSource;
 
     @Value("${shiro.userrole}")
     private String shiroUserRoleQuery;
 
-    @Bean(name = "dataSource")
-    public DataSource dataSource()
-    {
-        DriverManagerDataSource dataSource = new DriverManagerDataSource();
-
-        dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
-
-        dataSource.setUrl(mysqlDb);
-
-        dataSource.setUsername(user);
-
-        dataSource.setPassword(password);
-
-        return dataSource;
-    }
+    @Value("${shiro.auth}")
+    private String shiroAuthQuery;
 
     @Bean(name = "realm")
     @DependsOn("dataSource")
@@ -77,7 +57,9 @@ public class ShiroConfig
 
         jdbcRealm.setUserRolesQuery(shiroUserRoleQuery);
 
-        jdbcRealm.setDataSource(this.dataSource());
+        jdbcRealm.setAuthenticationQuery(shiroAuthQuery);
+
+        jdbcRealm.setDataSource(dataSource);
 
         jdbcRealm.init();
 
@@ -95,6 +77,28 @@ public class ShiroConfig
         SecurityUtils.setSecurityManager(securityManager);
 
         return securityManager;
+    }
+
+    @Bean(name = "hibernateFactory")
+    @DependsOn("dataSource")
+    public LocalSessionFactoryBean hibernateFactory()
+    {
+        LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
+
+        sessionFactory.setDataSource(dataSource);
+
+        sessionFactory.setPackagesToScan("{views}");
+
+        sessionFactory.setHibernateProperties(additionalProperties());
+
+        return sessionFactory;
+    }
+
+    @Bean
+    @DependsOn("hibernateFactory")
+    public SessionFactory sessionFactory()
+    {
+        return hibernateFactory().getObject();
     }
 
     @Bean
@@ -146,5 +150,16 @@ public class ShiroConfig
     public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer()
     {
         return new PropertySourcesPlaceholderConfigurer();
+    }
+
+    Properties additionalProperties()
+    {
+        Properties properties = new Properties();
+
+        properties.setProperty("hibernate.hbm2ddl.auto", "create-drop");
+
+        properties.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL5Dialect");
+
+        return properties;
     }
 }

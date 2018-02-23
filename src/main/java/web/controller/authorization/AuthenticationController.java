@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import service.AuthenticationService;
+import service.UserService;
 import views.authorization.AuthenticationView;
 
 /**
@@ -15,6 +16,9 @@ import views.authorization.AuthenticationView;
 @Controller
 public class AuthenticationController
 {
+    //@Autowired
+    //private UserService userService;
+
     @Autowired
     private AuthenticationService authenticationService;
 

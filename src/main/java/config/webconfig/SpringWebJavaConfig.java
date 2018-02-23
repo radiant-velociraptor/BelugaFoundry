@@ -13,7 +13,7 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
  * @author tmblount
  */
 @Configuration
-@ComponentScan(basePackages = {"web.controller, service"})
+@ComponentScan(basePackages = {"web.controller, service.impl"})
 @EnableWebMvc
 public class SpringWebJavaConfig implements WebMvcConfigurer
 {

@@ -1,24 +1,39 @@
 package views;
 
+import javax.persistence.*;
 import java.util.List;
 
 /**
  * @author tmblount
  */
+@Entity
+@Table
 public class User
 {
+    @Id
+    @Column
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+
+    @Column
     private String username;
+
+    @Column
     private String emailAddress;
+
+    @Column
     private String level;
+
+    @Column
     private boolean isBanned;
-    private List<Pet> pets;
+
+    public User() {}
 
     public User(String username, String emailAddress, String level, List<Pet> pets)
     {
         this.username = username;
         this.emailAddress = emailAddress;
         this.level = level;
-        this.pets = pets;
     }
 
     public String getUsername()
@@ -61,16 +76,6 @@ public class User
         isBanned = banned;
     }
 
-    public List<Pet> getPets()
-    {
-        return pets;
-    }
-
-    public void setPets(List<Pet> pets)
-    {
-        this.pets = pets;
-    }
-
     @Override
     public String toString()
     {
@@ -79,7 +84,6 @@ public class User
                 ", emailAddress='" + emailAddress + '\'' +
                 ", level='" + level + '\'' +
                 ", isBanned=" + isBanned +
-                ", pets=" + pets +
                 '}';
     }
 }

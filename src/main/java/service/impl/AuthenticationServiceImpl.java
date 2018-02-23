@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import service.AuthenticationService;
 import service.SubjectService;
+import service.UserService;
 import views.authorization.AuthenticationView;
 
 /**
@@ -22,6 +23,9 @@ public class AuthenticationServiceImpl implements AuthenticationService
 
     @Autowired
     private SubjectService subjectService;
+
+    @Autowired
+    private UserService userService;
 
     @Override
     public AuthenticationView logIn(String username, String password)
@@ -52,6 +56,11 @@ public class AuthenticationServiceImpl implements AuthenticationService
                 LOGGER.debug("Login for [{}] was successful.", username);
 
                 // TODO retrieve user info
+                userService.getUserInfo("Mel@Mel.com");
+
+                // Always do this to prevent the possibility of accessing passwords
+                // via memory somewhere down the line.
+                usernamePasswordToken.clear();
 
                 return new AuthenticationView(username);
             }

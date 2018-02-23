@@ -51,10 +51,10 @@ public class AuthenticationTest
     public void testLoginSucceed() throws Exception
     {
         mockMvc.perform(post("/login")
-                                .param("username", "Mel")
+                                .param("username", "Mel@Mel.com")
                                 .param("password", "Mel"))
                                 .andExpect(jsonPath("$.loginMessage", is("OK")))
-                                .andExpect(jsonPath("$.userName", is("Mel")))
+                                .andExpect(jsonPath("$.userName", is("Mel@Mel.com")))
                 .andDo(print());
     }
 
@@ -62,10 +62,10 @@ public class AuthenticationTest
     public void testLoginWrongPassword() throws Exception
     {
         mockMvc.perform(post("/login")
-                                .param("username", "Mel")
+                                .param("username", "Mel@Mel.com")
                                 .param("password", "wronglol"))
                                 .andExpect(jsonPath("$.loginMessage", is("The username/password combination is incorrect.")))
-                                .andExpect(jsonPath("$.userName", is("Mel")))
+                                .andExpect(jsonPath("$.userName", is("Mel@Mel.com")))
                 .andDo(print());
     }
 
@@ -84,16 +84,16 @@ public class AuthenticationTest
     public void testLogoutAccount() throws Exception
     {
         mockMvc.perform(post("/login")
-                                .param("username", "Mel")
+                                .param("username", "Mel@Mel.com")
                                 .param("password", "Mel"))
                 .andExpect(jsonPath("$.loginMessage", is("OK")))
-                .andExpect(jsonPath("$.userName", is("Mel")))
+                .andExpect(jsonPath("$.userName", is("Mel@Mel.com")))
                 .andDo(print());
 
         mockMvc.perform(get("/logout")
-                                .param("username", "Mel"))
+                                .param("username", "Mel@Mel.com"))
                 .andExpect(jsonPath("$.loginMessage", is("Logout success")))
-                .andExpect(jsonPath("$.userName", is("Mel")))
+                .andExpect(jsonPath("$.userName", is("Mel@Mel.com")))
                 .andDo(print());
     }
 }
