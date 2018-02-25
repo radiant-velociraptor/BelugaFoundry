@@ -25,15 +25,16 @@ public class User
     private String level;
 
     @Column
-    private String isBanned;
+    private String banned;
 
     public User() {}
 
-    public User(String username, String emailAddress, String level, List<Pet> pets)
+    public User(String username, String emailAddress, String level, String isBanned, List<Pet> pets)
     {
         this.username = username;
         this.email = emailAddress;
         this.level = level;
+        this.banned = isBanned;
     }
 
     public String getUsername()
@@ -66,14 +67,14 @@ public class User
         this.level = level;
     }
 
-    public String isBanned()
+    public String getBanned()
     {
-        return isBanned;
+        return banned;
     }
 
     public void setBanned(String banned)
     {
-        isBanned = banned;
+        this.banned = banned;
     }
 
     @Override
@@ -83,7 +84,7 @@ public class User
                 "username='" + username + '\'' +
                 ", emailAddress='" + email + '\'' +
                 ", level='" + level + '\'' +
-                ", isBanned=" + isBanned +
+                ", isBanned=" + banned +
                 '}';
     }
 }
