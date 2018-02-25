@@ -7,7 +7,7 @@ import java.util.List;
  * @author tmblount
  */
 @Entity
-@Table
+@Table(name = "users")
 public class User
 {
     @Id
@@ -19,20 +19,20 @@ public class User
     private String username;
 
     @Column
-    private String emailAddress;
+    private String email;
 
     @Column
     private String level;
 
     @Column
-    private boolean isBanned;
+    private String isBanned;
 
     public User() {}
 
     public User(String username, String emailAddress, String level, List<Pet> pets)
     {
         this.username = username;
-        this.emailAddress = emailAddress;
+        this.email = emailAddress;
         this.level = level;
     }
 
@@ -48,12 +48,12 @@ public class User
 
     public String getEmailAddress()
     {
-        return emailAddress;
+        return email;
     }
 
     public void setEmailAddress(String emailAddress)
     {
-        this.emailAddress = emailAddress;
+        this.email = emailAddress;
     }
 
     public String getLevel()
@@ -66,12 +66,12 @@ public class User
         this.level = level;
     }
 
-    public boolean isBanned()
+    public String isBanned()
     {
         return isBanned;
     }
 
-    public void setBanned(boolean banned)
+    public void setBanned(String banned)
     {
         isBanned = banned;
     }
@@ -81,7 +81,7 @@ public class User
     {
         return "User{" +
                 "username='" + username + '\'' +
-                ", emailAddress='" + emailAddress + '\'' +
+                ", emailAddress='" + email + '\'' +
                 ", level='" + level + '\'' +
                 ", isBanned=" + isBanned +
                 '}';

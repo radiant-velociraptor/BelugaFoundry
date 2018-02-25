@@ -1,5 +1,7 @@
 package views.authorization;
 
+import views.User;
+
 /**
  * @author tmblount
  */
@@ -8,6 +10,7 @@ public class AuthenticationView
     private String loginMessage = "OK";
 
     private String userName = "";
+    private User user;
 
     public AuthenticationView()
     {
@@ -37,5 +40,15 @@ public class AuthenticationView
     public String getLoginMessage()
     {
         return this.loginMessage;
+    }
+
+    public User getUser()
+    {
+        return user;
+    }
+
+    public void setUser(User user)
+    {
+        this.user = user;
     }
 }

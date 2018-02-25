@@ -1,12 +1,11 @@
 package service.impl;
 
-import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
-import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.stereotype.Service;
 import service.UserService;
 import views.User;
+
+import javax.persistence.EntityManager;
 
 /**
  * @author tmblount
@@ -15,23 +14,13 @@ import views.User;
 public class UserServiceImpl implements UserService
 {
     @Autowired
-  //  @Qualifier("sessionFactory")
-    private SessionFactory sessionFactory;
-    //private AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor;
-
-    @Autowired
-    private ShiroFilterFactoryBean shiroFilterFactoryBean;
+    private EntityManager entityManager;
 
     @Override
     public User getUserInfo(String emailAddress)
     {
-       // Criteria criteria = sessionFactory.openSession().createCriteria(User.class);
-        //criteria.add(Restrictions.eq("emailaddress", emailAddress));
-
-        //List<User> list = criteria.list();
-
-        //System.out.println(list);
-
-        return new User();
+        // Must define a "User" object to be returned from the query by using the select [objName] from [table] [objName]... syntax
+        // because otherwise the TypedQuery won't be able to convert the result into the User object.
+        return entityManager.createQuery("select u from User u where email = '" + emailAddress + "'", User.class).getSingleResult();
     }
 }

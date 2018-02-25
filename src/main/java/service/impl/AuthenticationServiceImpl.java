@@ -55,14 +55,17 @@ public class AuthenticationServiceImpl implements AuthenticationService
 
                 LOGGER.debug("Login for [{}] was successful.", username);
 
-                // TODO retrieve user info
-                userService.getUserInfo("Mel@Mel.com");
+                AuthenticationView successfulAuth = new AuthenticationView();
+
+                successfulAuth.setUserName(username);
+
+                successfulAuth.setUser(userService.getUserInfo(username));
 
                 // Always do this to prevent the possibility of accessing passwords
                 // via memory somewhere down the line.
                 usernamePasswordToken.clear();
 
-                return new AuthenticationView(username);
+                return successfulAuth;
             }
             catch (UnknownAccountException unaex)
             {

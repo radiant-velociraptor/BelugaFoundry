@@ -10,14 +10,21 @@ import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.filter.authc.AnonymousFilter;
 import org.apache.shiro.web.filter.authc.FormAuthenticationFilter;
 import org.apache.shiro.web.filter.authc.LogoutFilter;
+import org.hibernate.SessionFactory;
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.*;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
-import org.hibernate.SessionFactory;
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.orm.jpa.JpaVendorAdapter;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import javax.persistence.EntityManager;
 import javax.servlet.Filter;
 import javax.sql.DataSource;
 import java.util.HashMap;
@@ -30,6 +37,7 @@ import java.util.Properties;
 @Configuration
 @PropertySource("classpath:shiro.properties")
 @Import({DatabaseConfig.class})
+@EnableTransactionManagement
 public class ShiroConfig
 {
     @Autowired
@@ -139,7 +147,8 @@ public class ShiroConfig
     @DependsOn("securityManager")
     public AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor()
     {
-        AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor = new AuthorizationAttributeSourceAdvisor();
+        AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor = new
+                AuthorizationAttributeSourceAdvisor();
 
         authorizationAttributeSourceAdvisor.setSecurityManager(this.securityManager());
 
@@ -156,10 +165,47 @@ public class ShiroConfig
     {
         Properties properties = new Properties();
 
-        properties.setProperty("hibernate.hbm2ddl.auto", "create-drop");
-
         properties.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL5Dialect");
 
         return properties;
+    }
+
+    @Bean(name = "entityManagerFactoryBean")
+    public LocalContainerEntityManagerFactoryBean getEntityManagerFactoryBean()
+    {
+        LocalContainerEntityManagerFactoryBean localContainerEntityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
+
+        localContainerEntityManagerFactoryBean.setJpaVendorAdapter(getJpaVendorAdapter());
+
+        localContainerEntityManagerFactoryBean.setDataSource(dataSource);
+
+        localContainerEntityManagerFactoryBean.setPersistenceUnitName("beluga-foundry-jpa");
+
+        localContainerEntityManagerFactoryBean.setPackagesToScan("views");
+
+        localContainerEntityManagerFactoryBean.setJpaProperties(additionalProperties());
+
+        return localContainerEntityManagerFactoryBean;
+    }
+
+    @Bean
+    @DependsOn("entityManagerFactoryBean")
+    public EntityManager entityManager()
+    {
+        return getEntityManagerFactoryBean().getObject().createEntityManager();
+    }
+
+    @Bean
+    public JpaVendorAdapter getJpaVendorAdapter()
+    {
+        return new HibernateJpaVendorAdapter();
+    }
+
+    @Bean
+    public PlatformTransactionManager txManager()
+    {
+        JpaTransactionManager jpaTransactionManager = new JpaTransactionManager(
+                getEntityManagerFactoryBean().getObject());
+        return jpaTransactionManager;
     }
 }
