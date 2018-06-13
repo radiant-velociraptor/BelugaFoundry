@@ -1,4 +1,5 @@
 /target/
 .idea/*
 /resources/mysql.properties
+/src/main/java/resources/mysql.properties
 *.iml
