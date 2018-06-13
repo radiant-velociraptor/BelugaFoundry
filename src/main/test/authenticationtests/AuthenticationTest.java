@@ -1,6 +1,5 @@
 package authenticationtests;
 
-import config.appconfig.DatabaseConfig;
 import config.appconfig.ShiroConfig;
 import config.webconfig.SpringWebJavaConfig;
 import org.junit.Assert;
@@ -51,7 +50,7 @@ public class AuthenticationTest
     public void testLoginSucceed() throws Exception
     {
         mockMvc.perform(post("/login")
-                                .param("username", "Mel@Mel.com")
+                                .param("emailAddress", "Mel@Mel.com")
                                 .param("password", "Mel"))
                                 .andExpect(jsonPath("$.loginMessage", is("OK")))
                                 .andExpect(jsonPath("$.userName", is("Mel@Mel.com")))
@@ -66,7 +65,7 @@ public class AuthenticationTest
     public void testLoginWrongPassword() throws Exception
     {
         mockMvc.perform(post("/login")
-                                .param("username", "Mel@Mel.com")
+                                .param("emailAddress", "Mel@Mel.com")
                                 .param("password", "wronglol"))
                                 .andExpect(jsonPath("$.loginMessage", is("The username/password combination is incorrect.")))
                                 .andExpect(jsonPath("$.userName", is("Mel@Mel.com")))
@@ -77,7 +76,7 @@ public class AuthenticationTest
     public void testLoginAccountNotFound() throws Exception
     {
         mockMvc.perform(post("/login")
-                                .param("username", "DoesNotExist")
+                                .param("emailAddress", "DoesNotExist")
                                 .param("password", "Fake"))
                                 .andExpect(jsonPath("$.loginMessage", is("This username isn't in our system.")))
                                 .andExpect(jsonPath("$.userName", is("DoesNotExist")))
@@ -88,7 +87,7 @@ public class AuthenticationTest
     public void testLogoutAccount() throws Exception
     {
         mockMvc.perform(post("/login")
-                                .param("username", "Mel@Mel.com")
+                                .param("emailAddress", "Mel@Mel.com")
                                 .param("password", "Mel"))
                 .andExpect(jsonPath("$.loginMessage", is("OK")))
                 .andExpect(jsonPath("$.userName", is("Mel@Mel.com")))
@@ -99,7 +98,7 @@ public class AuthenticationTest
                 .andDo(print());
 
         mockMvc.perform(get("/logout")
-                                .param("username", "Mel@Mel.com"))
+                                .param("emailAddress", "Mel@Mel.com"))
                 .andExpect(jsonPath("$.loginMessage", is("Logout success")))
                 .andExpect(jsonPath("$.userName", is("Mel@Mel.com")))
                 .andDo(print());

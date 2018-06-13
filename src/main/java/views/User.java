@@ -27,6 +27,9 @@ public class User
     @Column
     private String banned;
 
+    // TODO make work in Hibernate once you get to pets
+    //private List<Pet> pets;
+
     public User() {}
 
     public User(String username, String emailAddress, String level, String isBanned, List<Pet> pets)
@@ -35,6 +38,7 @@ public class User
         this.email = emailAddress;
         this.level = level;
         this.banned = isBanned;
+        //this.pets = pets;
     }
 
     public String getUsername()
@@ -76,6 +80,16 @@ public class User
     {
         this.banned = banned;
     }
+
+    /*public List<Pet> getPets()
+    {
+        return pets;
+    }
+
+    public void setPets(List<Pet> pets)
+    {
+        this.pets = pets;
+    }*/
 
     @Override
     public String toString()

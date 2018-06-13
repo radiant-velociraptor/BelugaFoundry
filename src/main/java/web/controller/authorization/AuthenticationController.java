@@ -16,16 +16,13 @@ import views.authorization.AuthenticationView;
 @Controller
 public class AuthenticationController
 {
-    //@Autowired
-    //private UserService userService;
-
     @Autowired
     private AuthenticationService authenticationService;
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     @ResponseBody
     public AuthenticationView login(
-            @RequestParam(value = "username", required = true) String username,
+            @RequestParam(value = "emailAddress", required = true) String username,
             @RequestParam(value = "password", required = true) String password
     )
     {
@@ -35,7 +32,7 @@ public class AuthenticationController
     @RequestMapping(value = "/logout", method = RequestMethod.GET)
     @ResponseBody
     public AuthenticationView logout(
-            @RequestParam(value = "username", required = true) String username
+            @RequestParam(value = "emailAddress", required = true) String username
     )
     {
         return authenticationService.logout(username);
