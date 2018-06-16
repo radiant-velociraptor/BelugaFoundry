@@ -4,6 +4,7 @@ import config.appconfig.ShiroConfig;
 import config.webconfig.SpringWebJavaConfig;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,12 +56,27 @@ public class UserRegistrationTest
     }
 
     @Test
+    @Ignore("Need to use dbunit or something to add/delete these")
     public void testCheckIfUserRegisteredFalse() throws Exception
     {
         mockMvc.perform(post("/isRegistered")
                 .param("emailAddress", "not@registered.com"))
                 .andExpect(jsonPath("$.emailAddress", is("not@registered.com")))
                 .andExpect(jsonPath("$.registered", is(false)))
+                .andDo(print());
+    }
+
+    @Test
+    @Ignore("Need to use dbunit or something to add/delete these")
+    public void testSuccessfulRegistration() throws Exception
+    {
+        mockMvc.perform(post("/register/user")
+                .param("emailAddress", "not@registered.com")
+                .param("username", "you-neeq")
+                .param("password", "password"))
+                .andExpect(jsonPath("$.emailAddress", is("not@registered.com")))
+                .andExpect(jsonPath("$.username", is("you-neeq")))
+                .andExpect(jsonPath("$.registered", is(true)))
                 .andDo(print());
     }
 }

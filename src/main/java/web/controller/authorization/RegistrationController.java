@@ -6,7 +6,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import service.UserService;
+import service.UserInfoService;
+import service.UserRegistrationService;
 import views.User;
 import views.UserView;
 
@@ -17,7 +18,10 @@ import views.UserView;
 public class RegistrationController
 {
     @Autowired
-    private UserService userService;
+    private UserRegistrationService userRegistrationService;
+
+    @Autowired
+    private UserInfoService userInfoService;
 
     @RequestMapping(value = "/register/user", method = RequestMethod.POST)
     @ResponseBody
@@ -27,15 +31,21 @@ public class RegistrationController
             @RequestParam(value = "password", required = true) String password
     )
     {
-        User user = userService.getUserInfo(email);
+        UserView userView = new UserView();
+
+        User user = userInfoService.getUserInfo(email);
 
         // Does the user exist?
         if (user == null)
         {
             // TODO register the user, creating a user object at the same time
+            user = userRegistrationService.registerUser(email, username, password);
+
+            userView.setRegistered(false);
+            userView.setNew(true);
         }
 
-        return new UserView(user);
+        return userView;
     }
 
     @RequestMapping(value = "/isRegistered", method = RequestMethod.POST)
@@ -45,7 +55,7 @@ public class RegistrationController
     {
         UserView userView = new UserView();
 
-        User user = userService.getUserInfo(email);
+        User user = userInfoService.getUserInfo(email);
 
         userView.setEmailAddress(email);
 

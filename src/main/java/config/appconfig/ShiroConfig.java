@@ -10,12 +10,18 @@ import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.filter.authc.AnonymousFilter;
 import org.apache.shiro.web.filter.authc.FormAuthenticationFilter;
 import org.apache.shiro.web.filter.authc.LogoutFilter;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.boot.MetadataSources;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.cfg.Environment;
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.*;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.orm.hibernate5.HibernateTemplate;
+import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
@@ -23,6 +29,7 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import views.User;
 
 import javax.persistence.EntityManager;
 import javax.servlet.Filter;
@@ -87,26 +94,48 @@ public class ShiroConfig
         return securityManager;
     }
 
-    @Bean(name = "hibernateFactory")
-    @DependsOn("dataSource")
-    public LocalSessionFactoryBean hibernateFactory()
+    @Bean
+    public SessionFactory sessionFactory() throws ClassNotFoundException
     {
-        LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
+        Properties properties = new Properties();
+        properties.put("hibernate.dialect","org.hibernate.dialect.MySQLDialect");
+        properties.put("hibernate.show_sql", "true");
+        properties.put("hibernate.hbm2ddl.auto","update");
 
-        sessionFactory.setDataSource(dataSource);
+        StandardServiceRegistryBuilder standardServiceRegistryBuilder = new StandardServiceRegistryBuilder();
+        standardServiceRegistryBuilder.applySettings(properties);
+        standardServiceRegistryBuilder.applySetting(Environment.DATASOURCE, dataSource);
 
-        sessionFactory.setPackagesToScan("{views}");
-
-        sessionFactory.setHibernateProperties(additionalProperties());
-
-        return sessionFactory;
+        MetadataSources metadataSources = new MetadataSources(standardServiceRegistryBuilder.build());
+        metadataSources.addAnnotatedClass(User.class);
+        return metadataSources.getMetadataBuilder().build().buildSessionFactory();
     }
 
     @Bean
-    @DependsOn("hibernateFactory")
-    public SessionFactory sessionFactory()
+    public Session readSession() throws ClassNotFoundException
     {
-        return hibernateFactory().getObject();
+        Session readOnlySession = sessionFactory().openSession();
+
+        readOnlySession.setDefaultReadOnly(true);
+
+        return readOnlySession;
+    }
+
+    @Bean
+    @Autowired
+    public HibernateTransactionManager transactionManager(SessionFactory sessionFactory)
+    {
+        HibernateTransactionManager htm = new HibernateTransactionManager();
+        htm.setSessionFactory(sessionFactory);
+        return htm;
+    }
+
+    @Bean
+    @Autowired
+    public HibernateTemplate getHibernateTemplate(SessionFactory sessionFactory)
+    {
+        HibernateTemplate hibernateTemplate = new HibernateTemplate(sessionFactory);
+        return hibernateTemplate;
     }
 
     @Bean
@@ -201,11 +230,11 @@ public class ShiroConfig
         return new HibernateJpaVendorAdapter();
     }
 
-    @Bean
+   /* @Bean
     public PlatformTransactionManager txManager()
     {
         JpaTransactionManager jpaTransactionManager = new JpaTransactionManager(
                 getEntityManagerFactoryBean().getObject());
         return jpaTransactionManager;
-    }
+    }*/
 }

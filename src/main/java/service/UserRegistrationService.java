@@ -5,17 +5,8 @@ import views.User;
 /**
  * @author tmblount
  */
-public interface UserService
+public interface UserRegistrationService
 {
-    /**
-     * Get info for the user attached to this email address;
-     *
-     * @param emailAddress the user's email address
-     *
-     * @return a user corresponding with this email address, if available
-     */
-    public User getUserInfo(String emailAddress);
-
     /**
      * Register a user.
      *

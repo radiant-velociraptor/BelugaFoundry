@@ -1,6 +1,9 @@
 package views;
 
+import immutable.Level;
+
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -8,18 +11,23 @@ import java.util.List;
  */
 @Entity
 @Table(name = "users")
-public class User
+public class User implements Serializable
 {
+    private static final long serialVersionUID = 86736718389076781L;
+
     @Id
-    @Column
+    @Column(name = "id", unique = true)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column
+    @Column(name = "username", unique = true)
     private String username;
 
     @Column
-    private String email;
+    private String password;
+
+    @Column(name = "email", unique = true)
+    private String emailAddress;
 
     @Column
     private String level;
@@ -35,7 +43,7 @@ public class User
     public User(String username, String emailAddress, String level, String isBanned, List<Pet> pets)
     {
         this.username = username;
-        this.email = emailAddress;
+        this.emailAddress = emailAddress;
         this.level = level;
         this.banned = isBanned;
         //this.pets = pets;
@@ -51,19 +59,24 @@ public class User
         this.username = username;
     }
 
+    public void setPassword(String password)
+    {
+        this.password = password;
+    }
+
     public String getEmailAddress()
     {
-        return email;
+        return emailAddress;
     }
 
     public void setEmailAddress(String emailAddress)
     {
-        this.email = emailAddress;
+        this.emailAddress = emailAddress;
     }
 
-    public String getLevel()
+    public Level getLevel()
     {
-        return level;
+        return Level.valueOf(level);
     }
 
     public void setLevel(String level)
@@ -96,7 +109,7 @@ public class User
     {
         return "User{" +
                 "username='" + username + '\'' +
-                ", emailAddress='" + email + '\'' +
+                ", emailAddress='" + emailAddress + '\'' +
                 ", level='" + level + '\'' +
                 ", isBanned=" + banned +
                 '}';

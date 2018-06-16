@@ -15,6 +15,7 @@ public class UserView
     private boolean isBanned;
     // private Level level; // TODO enumeration? MySQL?
     private boolean isRegistered = true;
+    private boolean isNew = false;
 
     public UserView()
     {
@@ -78,6 +79,16 @@ public class UserView
     public void setRegistered(boolean registered)
     {
         isRegistered = registered;
+    }
+
+    public boolean isNew()
+    {
+        return isNew;
+    }
+
+    public void setNew(boolean aNew)
+    {
+        isNew = aNew;
     }
 
     @Override

@@ -1,25 +1,18 @@
 package service.impl;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import service.UserService;
+import service.UserInfoService;
 import views.User;
 
-import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 
-/**
- * @author tmblount
- */
-@Service("userService")
-public class UserServiceImpl implements UserService
+@Service("userInfoService")
+public class UserInfoServiceImpl implements UserInfoService
 {
-    private static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
-
     @Autowired
-    private EntityManager entityManager;
+    private Session readOnlySession;
 
     @Override
     public User getUserInfo(String emailAddress)
@@ -30,7 +23,7 @@ public class UserServiceImpl implements UserService
         {
             // Must define a "User" object to be returned from the query by using the select [objName] from [table] [objName]... syntax
             // because otherwise the TypedQuery won't be able to convert the result into the User object.
-            user = entityManager.createQuery("select u from User u where email = '" + emailAddress + "'", User.class).getSingleResult();
+            user = readOnlySession.createQuery("select u from User u where email = '" + emailAddress + "'", User.class).getSingleResult();
         }
         catch (NoResultException norex)
         {
@@ -38,11 +31,5 @@ public class UserServiceImpl implements UserService
         }
 
         return user;
-    }
-
-    @Override
-    public User registerUser(String emailAddress, String username, String password)
-    {
-        return null;
     }
 }
