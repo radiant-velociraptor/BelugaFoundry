@@ -15,19 +15,15 @@ import org.hibernate.SessionFactory;
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Environment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.*;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
-import org.springframework.orm.hibernate5.HibernateTemplate;
-import org.springframework.orm.hibernate5.HibernateTransactionManager;
-import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
-import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
-import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
-import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import views.User;
 
@@ -47,6 +43,8 @@ import java.util.Properties;
 @EnableTransactionManagement
 public class ShiroConfig
 {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ShiroConfig.class);
+
     @Autowired
     private DataSource dataSource;
 
@@ -98,9 +96,10 @@ public class ShiroConfig
     public SessionFactory sessionFactory() throws ClassNotFoundException
     {
         Properties properties = new Properties();
-        properties.put("hibernate.dialect","org.hibernate.dialect.MySQLDialect");
+        // Required for Mysql 5+. Otherwise Hibernate adds type=MyISAM to your queries and explodes.
+        properties.put("hibernate.dialect","org.hibernate.dialect.MySQL5Dialect");
         properties.put("hibernate.show_sql", "true");
-        properties.put("hibernate.hbm2ddl.auto","update");
+        //properties.put("hibernate.hbm2ddl.auto","update");
 
         StandardServiceRegistryBuilder standardServiceRegistryBuilder = new StandardServiceRegistryBuilder();
         standardServiceRegistryBuilder.applySettings(properties);
@@ -119,23 +118,6 @@ public class ShiroConfig
         readOnlySession.setDefaultReadOnly(true);
 
         return readOnlySession;
-    }
-
-    @Bean
-    @Autowired
-    public HibernateTransactionManager transactionManager(SessionFactory sessionFactory)
-    {
-        HibernateTransactionManager htm = new HibernateTransactionManager();
-        htm.setSessionFactory(sessionFactory);
-        return htm;
-    }
-
-    @Bean
-    @Autowired
-    public HibernateTemplate getHibernateTemplate(SessionFactory sessionFactory)
-    {
-        HibernateTemplate hibernateTemplate = new HibernateTemplate(sessionFactory);
-        return hibernateTemplate;
     }
 
     @Bean
@@ -190,51 +172,9 @@ public class ShiroConfig
         return new PropertySourcesPlaceholderConfigurer();
     }
 
-    Properties additionalProperties()
-    {
-        Properties properties = new Properties();
-
-        properties.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL5Dialect");
-
-        return properties;
-    }
-
-    @Bean(name = "entityManagerFactoryBean")
-    public LocalContainerEntityManagerFactoryBean getEntityManagerFactoryBean()
-    {
-        LocalContainerEntityManagerFactoryBean localContainerEntityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
-
-        localContainerEntityManagerFactoryBean.setJpaVendorAdapter(getJpaVendorAdapter());
-
-        localContainerEntityManagerFactoryBean.setDataSource(dataSource);
-
-        localContainerEntityManagerFactoryBean.setPersistenceUnitName("beluga-foundry-jpa");
-
-        localContainerEntityManagerFactoryBean.setPackagesToScan("views");
-
-        localContainerEntityManagerFactoryBean.setJpaProperties(additionalProperties());
-
-        return localContainerEntityManagerFactoryBean;
-    }
-
-    @Bean
-    @DependsOn("entityManagerFactoryBean")
-    public EntityManager entityManager()
-    {
-        return getEntityManagerFactoryBean().getObject().createEntityManager();
-    }
-
     @Bean
     public JpaVendorAdapter getJpaVendorAdapter()
     {
         return new HibernateJpaVendorAdapter();
     }
-
-   /* @Bean
-    public PlatformTransactionManager txManager()
-    {
-        JpaTransactionManager jpaTransactionManager = new JpaTransactionManager(
-                getEntityManagerFactoryBean().getObject());
-        return jpaTransactionManager;
-    }*/
 }

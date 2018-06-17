@@ -52,12 +52,11 @@ public class AuthenticationTest
         mockMvc.perform(post("/login")
                                 .param("emailAddress", "Mel@Mel.com")
                                 .param("password", "Mel"))
-                              /*  .andExpect(jsonPath("$.loginMessage", is("OK")))
+                                .andExpect(jsonPath("$.loginMessage", is("OK")))
                                 .andExpect(jsonPath("$.userName", is("Mel@Mel.com")))
                                 .andExpect(jsonPath("$.user.username", is("Mel")))
-                                .andExpect(jsonPath("$.user.level", is("Wizard")))
                                 .andExpect(jsonPath("$.user.emailAddress", is("Mel@Mel.com")))
-                                .andExpect(jsonPath("$.user.banned", is("F")))*/
+                                .andExpect(jsonPath("$.user.banned", is("F")))
                 .andDo(print());
     }
 
@@ -92,7 +91,6 @@ public class AuthenticationTest
                 .andExpect(jsonPath("$.loginMessage", is("OK")))
                 .andExpect(jsonPath("$.userName", is("Mel@Mel.com")))
                 .andExpect(jsonPath("$.user.username", is("Mel")))
-                .andExpect(jsonPath("$.user.level", is("Wizard")))
                 .andExpect(jsonPath("$.user.emailAddress", is("Mel@Mel.com")))
                 .andExpect(jsonPath("$.user.banned", is("F")))
                 .andDo(print());

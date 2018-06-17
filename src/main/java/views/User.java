@@ -1,7 +1,5 @@
 package views;
 
-import immutable.Level;
-
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
@@ -30,9 +28,6 @@ public class User implements Serializable
     private String emailAddress;
 
     @Column
-    private String level;
-
-    @Column
     private String banned;
 
     // TODO make work in Hibernate once you get to pets
@@ -40,11 +35,10 @@ public class User implements Serializable
 
     public User() {}
 
-    public User(String username, String emailAddress, String level, String isBanned, List<Pet> pets)
+    public User(String username, String emailAddress, String isBanned, List<Pet> pets)
     {
         this.username = username;
         this.emailAddress = emailAddress;
-        this.level = level;
         this.banned = isBanned;
         //this.pets = pets;
     }
@@ -74,16 +68,6 @@ public class User implements Serializable
         this.emailAddress = emailAddress;
     }
 
-    public Level getLevel()
-    {
-        return Level.valueOf(level);
-    }
-
-    public void setLevel(String level)
-    {
-        this.level = level;
-    }
-
     public String getBanned()
     {
         return banned;
@@ -110,7 +94,6 @@ public class User implements Serializable
         return "User{" +
                 "username='" + username + '\'' +
                 ", emailAddress='" + emailAddress + '\'' +
-                ", level='" + level + '\'' +
                 ", isBanned=" + banned +
                 '}';
     }

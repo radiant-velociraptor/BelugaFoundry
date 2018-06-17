@@ -1,6 +1,5 @@
 package service.impl;
 
-import immutable.Level;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -65,7 +64,6 @@ public class UserRegistrationServiceImpl implements UserRegistrationService
         user.setUsername(username);
         user.setPassword(password);
         user.setBanned("F");
-        user.setLevel(String.valueOf(Level.Neophyte));
 
         return user;
     }
