@@ -38,7 +38,6 @@ public class RegistrationController
         // Does the user exist?
         if (user == null)
         {
-            // TODO register the user, creating a user object at the same time
             user = userRegistrationService.registerUser(email, username, password);
 
             userView.setRegistered(false);

@@ -52,12 +52,12 @@ public class AuthenticationTest
         mockMvc.perform(post("/login")
                                 .param("emailAddress", "Mel@Mel.com")
                                 .param("password", "Mel"))
+                                .andDo(print())
                                 .andExpect(jsonPath("$.loginMessage", is("OK")))
                                 .andExpect(jsonPath("$.userName", is("Mel@Mel.com")))
                                 .andExpect(jsonPath("$.user.username", is("Mel")))
                                 .andExpect(jsonPath("$.user.emailAddress", is("Mel@Mel.com")))
-                                .andExpect(jsonPath("$.user.banned", is("F")))
-                .andDo(print());
+                                .andExpect(jsonPath("$.user.banned", is("F")));
     }
 
     @Test
@@ -66,9 +66,9 @@ public class AuthenticationTest
         mockMvc.perform(post("/login")
                                 .param("emailAddress", "Mel@Mel.com")
                                 .param("password", "wronglol"))
+                                .andDo(print())
                                 .andExpect(jsonPath("$.loginMessage", is("The username/password combination is incorrect.")))
-                                .andExpect(jsonPath("$.userName", is("Mel@Mel.com")))
-                .andDo(print());
+                                .andExpect(jsonPath("$.userName", is("Mel@Mel.com")));
     }
 
     @Test
@@ -77,9 +77,9 @@ public class AuthenticationTest
         mockMvc.perform(post("/login")
                                 .param("emailAddress", "DoesNotExist")
                                 .param("password", "Fake"))
+                                .andDo(print())
                                 .andExpect(jsonPath("$.loginMessage", is("This username isn't in our system.")))
-                                .andExpect(jsonPath("$.userName", is("DoesNotExist")))
-                .andDo(print());
+                                .andExpect(jsonPath("$.userName", is("DoesNotExist")));
     }
 
     @Test
@@ -88,17 +88,17 @@ public class AuthenticationTest
         mockMvc.perform(post("/login")
                                 .param("emailAddress", "Mel@Mel.com")
                                 .param("password", "Mel"))
-                .andExpect(jsonPath("$.loginMessage", is("OK")))
-                .andExpect(jsonPath("$.userName", is("Mel@Mel.com")))
-                .andExpect(jsonPath("$.user.username", is("Mel")))
-                .andExpect(jsonPath("$.user.emailAddress", is("Mel@Mel.com")))
-                .andExpect(jsonPath("$.user.banned", is("F")))
-                .andDo(print());
+                                .andDo(print())
+                                .andExpect(jsonPath("$.loginMessage", is("OK")))
+                                .andExpect(jsonPath("$.userName", is("Mel@Mel.com")))
+                                .andExpect(jsonPath("$.user.username", is("Mel")))
+                                .andExpect(jsonPath("$.user.emailAddress", is("Mel@Mel.com")))
+                                .andExpect(jsonPath("$.user.banned", is("F")));
 
         mockMvc.perform(get("/logout")
                                 .param("emailAddress", "Mel@Mel.com"))
-                .andExpect(jsonPath("$.loginMessage", is("Logout success")))
-                .andExpect(jsonPath("$.userName", is("Mel@Mel.com")))
-                .andDo(print());
+                                .andDo(print())
+                                .andExpect(jsonPath("$.loginMessage", is("Logout success")))
+                                .andExpect(jsonPath("$.userName", is("Mel@Mel.com")));
     }
 }

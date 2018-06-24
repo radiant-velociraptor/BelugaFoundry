@@ -25,9 +25,13 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import service.PetInfoService;
+import views.Pet;
+import views.Pets;
 import views.User;
+import views.UserPet;
 
-import javax.persistence.EntityManager;
+import javax.annotation.PostConstruct;
 import javax.servlet.Filter;
 import javax.sql.DataSource;
 import java.util.HashMap;
@@ -47,6 +51,9 @@ public class ShiroConfig
 
     @Autowired
     private DataSource dataSource;
+
+    @Autowired
+    private PetInfoService petInfoService;
 
     @Value("${shiro.userrole}")
     private String shiroUserRoleQuery;
@@ -107,6 +114,8 @@ public class ShiroConfig
 
         MetadataSources metadataSources = new MetadataSources(standardServiceRegistryBuilder.build());
         metadataSources.addAnnotatedClass(User.class);
+        metadataSources.addAnnotatedClass(Pet.class);
+        metadataSources.addAnnotatedClass(UserPet.class);
         return metadataSources.getMetadataBuilder().build().buildSessionFactory();
     }
 
@@ -176,5 +185,12 @@ public class ShiroConfig
     public JpaVendorAdapter getJpaVendorAdapter()
     {
         return new HibernateJpaVendorAdapter();
+    }
+
+    @PostConstruct
+    @Bean
+    public Pets createPetsViews()
+    {
+        return new Pets(petInfoService.getAllPets());
     }
 }
