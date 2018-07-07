@@ -1,6 +1,7 @@
 package views;
 
 import javax.persistence.*;
+import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.List;
 
@@ -9,14 +10,15 @@ import java.util.List;
  */
 @Entity
 @Table(name = "users")
+@Transactional
 public class User implements Serializable
 {
     private static final long serialVersionUID = 86736718389076781L;
 
     @Id
-    @Column(name = "id", unique = true)
+    @Column(name = "user_id", unique = true)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private int userId;
 
     @Column(name = "username", unique = true)
     private String username;
@@ -30,8 +32,17 @@ public class User implements Serializable
     @Column
     private String banned;
 
-    // TODO make work in Hibernate once you get to pets
-    //private List<Pet> pets;
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "User_Pets",
+            joinColumns = {
+                    @JoinColumn(name = "user_id")
+            },
+            inverseJoinColumns = {
+                    @JoinColumn(name = "pet_id")
+            }
+    )
+    private List<Pet> pets;
 
     public User() {}
 
@@ -40,7 +51,17 @@ public class User implements Serializable
         this.username = username;
         this.emailAddress = emailAddress;
         this.banned = isBanned;
-        //this.pets = pets;
+        this.pets = pets;
+    }
+
+    public int getUserId()
+    {
+        return userId;
+    }
+
+    public void setUserId(int userId)
+    {
+        this.userId = userId;
     }
 
     public String getUsername()
@@ -78,7 +99,7 @@ public class User implements Serializable
         this.banned = banned;
     }
 
-    /*public List<Pet> getPets()
+    public List<Pet> getPets()
     {
         return pets;
     }
@@ -86,15 +107,17 @@ public class User implements Serializable
     public void setPets(List<Pet> pets)
     {
         this.pets = pets;
-    }*/
+    }
 
     @Override
     public String toString()
     {
         return "User{" +
                 "username='" + username + '\'' +
+                ", password='" + password + '\'' +
                 ", emailAddress='" + emailAddress + '\'' +
-                ", isBanned=" + banned +
+                ", banned='" + banned + '\'' +
+                ", pets=" + pets +
                 '}';
     }
 }

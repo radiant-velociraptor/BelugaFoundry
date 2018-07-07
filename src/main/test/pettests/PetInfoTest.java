@@ -98,6 +98,8 @@ public class PetInfoTest
         mockMvc.perform(get("/pet/user/pets")
                 .param("userId", "2"))
                 .andDo(print())
+                .andExpect(jsonPath("$[0].petId", is(1)))
+                .andExpect(jsonPath("$[0].name", is("Dragon (western)")))
                 .andExpect(jsonPath("$[0].hp", is(150)))
                 .andExpect(jsonPath("$[0].strength", is(55)))
                 .andExpect(jsonPath("$[0].defense", is(20)))

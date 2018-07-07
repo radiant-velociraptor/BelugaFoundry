@@ -4,9 +4,12 @@ import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import service.PetInfoService;
+import service.UserInfoService;
 import views.Pet;
+import views.User;
 
 import javax.persistence.NoResultException;
 import java.util.ArrayList;
@@ -23,7 +26,11 @@ public class PetInfoServiceImpl implements PetInfoService
     private static final Logger LOGGER = LoggerFactory.getLogger(PetInfoServiceImpl.class);
 
     @Autowired
+    @Qualifier("readOnlySession")
     private Session readOnlySession;
+
+    @Autowired
+    private UserInfoService userInfoService;
 
     /**
      * {@inheritDoc}
@@ -76,7 +83,12 @@ public class PetInfoServiceImpl implements PetInfoService
 
         try
         {
-            userPets = readOnlySession.createQuery("select new Pet(userPet.petId, pet.name, pet.hp, pet.strength, pet.defense, pet.speed, userPet.nickname) from Pet pet, UserPet userPet, User user where (user.id = :userId and userPet.id = :userId and pet.id = userPet.petId)", Pet.class).setParameter("userId", userId).getResultList();
+            User user = userInfoService.getUserInfoByUserId(userId);
+
+            if (user != null)
+            {
+                userPets = user.getPets();
+            }
         }
         catch (NoResultException norex)
         {

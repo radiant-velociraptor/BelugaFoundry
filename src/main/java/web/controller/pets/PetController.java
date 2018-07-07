@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import service.PetInfoService;
+import service.UserPetAdoptionService;
 import views.Pet;
 
 import java.util.List;
@@ -20,6 +21,9 @@ public class PetController
 {
     @Autowired
     private PetInfoService petInfoService;
+
+    @Autowired
+    private UserPetAdoptionService userPetAdoptionService;
 
     @RequestMapping(value = "/all", method = RequestMethod.GET)
     @ResponseBody
@@ -49,12 +53,12 @@ public class PetController
     @RequestMapping(value = "/adopt", method = RequestMethod.POST)
     @ResponseBody
     public String adoptPet(
-            @RequestParam(value = "userId", required = true) String userId,
-            @RequestParam(value = "petId", required = true) String petId,
+            @RequestParam(value = "userId", required = true) int userId,
+            @RequestParam(value = "petId", required = true) int petId,
             @RequestParam(value = "petName", required = false) String petName
     )
     {
-
+        userPetAdoptionService.adopt(petId, userId, petName);
 
         return "";
     }

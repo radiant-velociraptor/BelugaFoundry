@@ -1,12 +1,15 @@
 package views;
 
 import javax.persistence.*;
+import javax.transaction.Transactional;
+import java.util.List;
 
 /**
  * @author tmblount
  */
 @Entity
 @Table(name = "pets")
+@Transactional
 public class Pet
 {
     @Id
@@ -31,19 +34,12 @@ public class Pet
     @Transient
     private String nickname;
 
+    @ManyToMany(mappedBy = "pets", cascade = CascadeType.ALL)
+    private List<User> users;
+
     public Pet()
     {
 
-    }
-
-    public Pet(int id, String name, int hp, int strength, int defense, int speed)
-    {
-        this.petId = id;
-        this.name = name;
-        this.hp = hp;
-        this.strength = strength;
-        this.defense = defense;
-        this.speed = speed;
     }
 
     public Pet(int id, String name, int hp, int strength, int defense, int speed, String nickname)
@@ -137,6 +133,7 @@ public class Pet
                 ", strength=" + strength +
                 ", defense=" + defense +
                 ", speed=" + speed +
+                ", nickname='" + nickname +
                 '}';
     }
 }

@@ -2,6 +2,7 @@ package service.impl;
 
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import service.UserInfoService;
 import views.User;
@@ -12,6 +13,7 @@ import javax.persistence.NoResultException;
 public class UserInfoServiceImpl implements UserInfoService
 {
     @Autowired
+    @Qualifier("readOnlySession")
     private Session readOnlySession;
 
     @Override
@@ -24,6 +26,25 @@ public class UserInfoServiceImpl implements UserInfoService
             // Must define a "User" object to be returned from the query by using the select [objName] from [table] [objName]... syntax
             // because otherwise the TypedQuery won't be able to convert the result into the User object.
             user = readOnlySession.createQuery("select u from User u where email = '" + emailAddress + "'", User.class).getSingleResult();
+        }
+        catch (NoResultException norex)
+        {
+            // This is okay! There might not be a user to return and we will handle it.
+        }
+
+        return user;
+    }
+
+    @Override
+    public User getUserInfoByUserId(int userId)
+    {
+        User user = null;
+
+        try
+        {
+            // Must define a "User" object to be returned from the query by using the select [objName] from [table] [objName]... syntax
+            // because otherwise the TypedQuery won't be able to convert the result into the User object.
+            user = readOnlySession.createQuery("select u from User u where userId = '" + userId + "'", User.class).getSingleResult();
         }
         catch (NoResultException norex)
         {

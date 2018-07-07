@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.*;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
@@ -120,13 +121,25 @@ public class ShiroConfig
     }
 
     @Bean
-    public Session readSession() throws ClassNotFoundException
+    @Qualifier("readOnlySession")
+    public Session readOnlySession() throws ClassNotFoundException
     {
         Session readOnlySession = sessionFactory().openSession();
 
         readOnlySession.setDefaultReadOnly(true);
 
         return readOnlySession;
+    }
+
+    @Bean
+    @Qualifier("writeOnlySession")
+    public Session writeOnlySession() throws ClassNotFoundException
+    {
+        Session writeOnlySession = sessionFactory().openSession();
+
+        writeOnlySession.setDefaultReadOnly(false);
+
+        return writeOnlySession;
     }
 
     @Bean
