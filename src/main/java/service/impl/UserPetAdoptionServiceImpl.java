@@ -1,8 +1,8 @@
 package service.impl;
 
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +14,14 @@ import service.UserPetAdoptionService;
 import views.Pet;
 import views.User;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service("userPetAdoptionService")
 public class UserPetAdoptionServiceImpl implements UserPetAdoptionService
 {
+    public static final int MAX_PETS = 10;
+
     private static final Logger LOGGER = LoggerFactory.getLogger(UserPetAdoptionServiceImpl.class);
 
     @Autowired
@@ -33,41 +38,47 @@ public class UserPetAdoptionServiceImpl implements UserPetAdoptionService
     private UserInfoService userInfoService;
 
     @Override
-    public boolean adopt(int petId, int userId, String petNickname)
+    public List<Pet> adopt(int petId, int userId, String petNickname)
     {
-        Pet adopted = petInfoService.getPetByPetId(petId);
-
-        adopted.setNickname(petNickname);
-
-        User adopter = userInfoService.getUserInfoByUserId(userId);
-
-        adopter.getPets().add(adopted);
-
-        adopter.setEmailAddress("Mel@Test.com");
-
-        Session session = sessionFactory.openSession();
+        User adopter = null;
 
         try
         {
-            Transaction tx = writeOnlySession.beginTransaction();
-
-            adopted = (Pet) writeOnlySession.get(Pet.class, new Integer(petId));
-
             adopter = (User) writeOnlySession.get(User.class, new Integer(userId));
 
-            adopter.getPets().add(adopted);
+            if (adopter.getPets().size() < MAX_PETS)
+            {
+                // In order to save something to the db, you need to open a transaction.
+                writeOnlySession.beginTransaction();
 
-            writeOnlySession.saveOrUpdate(adopter);
+                Pet adopted = writeOnlySession.get(Pet.class, new Integer(petId));
 
-            //session.save(adopter);
+                adopted.setNickname(petNickname);
 
-            writeOnlySession.getTransaction().commit();
+                adopter.getPets().add(adopted);
+
+                // Re-use a session object -- don't spin up a new one or save/update doesn't work!
+                writeOnlySession.saveOrUpdate(adopter);
+
+                writeOnlySession.getTransaction().commit();
+            }
+            else
+            {
+                LOGGER.info("User " + adopter.getEmailAddress() + " has the max number of allowed pets.");
+            }
         }
-        catch (Exception ex)
+        catch (HibernateException hibex)
         {
-
+            LOGGER.warn("Error saving pets on user " + adopter.getEmailAddress());
         }
 
-        return false;
+        if (adopter != null)
+        {
+            return adopter.getPets();
+        }
+        else
+        {
+            return new ArrayList<>();
+        }
     }
 }

@@ -16,6 +16,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
@@ -47,6 +48,16 @@ public class PetInfoTest
     @Test
     public void testGetAllPets() throws Exception
     {
+        mockMvc.perform(post("/login")
+                .param("emailAddress", "Mel@Mel.com")
+                .param("password", "Mel"))
+                .andDo(print())
+                .andExpect(jsonPath("$.loginMessage", is("OK")))
+                .andExpect(jsonPath("$.userName", is("Mel@Mel.com")))
+                .andExpect(jsonPath("$.user.username", is("Mel")))
+                .andExpect(jsonPath("$.user.emailAddress", is("Mel@Mel.com")))
+                .andExpect(jsonPath("$.user.banned", is("F")));
+
         mockMvc.perform(get("/pet/all"))
                 .andDo(print())
                 .andExpect(jsonPath("$[0].petId", is(1)))
@@ -81,6 +92,16 @@ public class PetInfoTest
     @Test
     public void testGetPetById() throws Exception
     {
+        mockMvc.perform(post("/login")
+                .param("emailAddress", "Mel@Mel.com")
+                .param("password", "Mel"))
+                .andDo(print())
+                .andExpect(jsonPath("$.loginMessage", is("OK")))
+                .andExpect(jsonPath("$.userName", is("Mel@Mel.com")))
+                .andExpect(jsonPath("$.user.username", is("Mel")))
+                .andExpect(jsonPath("$.user.emailAddress", is("Mel@Mel.com")))
+                .andExpect(jsonPath("$.user.banned", is("F")));
+
         mockMvc.perform((get("/pet/byId"))
                 .param("petId", "1"))
                 .andDo(print())
@@ -95,6 +116,16 @@ public class PetInfoTest
     @Test
     public void testGetPetsByUserId() throws Exception
     {
+        mockMvc.perform(post("/login")
+                .param("emailAddress", "Mel@Mel.com")
+                .param("password", "Mel"))
+                .andDo(print())
+                .andExpect(jsonPath("$.loginMessage", is("OK")))
+                .andExpect(jsonPath("$.userName", is("Mel@Mel.com")))
+                .andExpect(jsonPath("$.user.username", is("Mel")))
+                .andExpect(jsonPath("$.user.emailAddress", is("Mel@Mel.com")))
+                .andExpect(jsonPath("$.user.banned", is("F")));
+
         mockMvc.perform(get("/pet/user/pets")
                 .param("userId", "2"))
                 .andDo(print())

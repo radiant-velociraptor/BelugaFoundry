@@ -1,5 +1,6 @@
 package web.controller.pets;
 
+import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,6 +27,7 @@ public class PetController
     private UserPetAdoptionService userPetAdoptionService;
 
     @RequestMapping(value = "/all", method = RequestMethod.GET)
+    @RequiresAuthentication
     @ResponseBody
     public List<Pet> getAll()
     {
@@ -33,6 +35,7 @@ public class PetController
     }
 
     @RequestMapping(value = "/byId", method = RequestMethod.GET)
+    @RequiresAuthentication
     @ResponseBody
     public Pet getPetById(
             @RequestParam(value = "petId", required = true) int petId
@@ -42,6 +45,7 @@ public class PetController
     }
 
     @RequestMapping(value = "/user/pets", method = RequestMethod.GET)
+    @RequiresAuthentication
     @ResponseBody
     public List<Pet> getUserPetsByUserId(
             @RequestParam(value = "userId", required = true) int userId
@@ -51,15 +55,14 @@ public class PetController
     }
 
     @RequestMapping(value = "/adopt", method = RequestMethod.POST)
+    @RequiresAuthentication
     @ResponseBody
-    public String adoptPet(
+    public List<Pet> adoptPet(
             @RequestParam(value = "userId", required = true) int userId,
             @RequestParam(value = "petId", required = true) int petId,
             @RequestParam(value = "petName", required = false) String petName
     )
     {
-        userPetAdoptionService.adopt(petId, userId, petName);
-
-        return "";
+        return userPetAdoptionService.adopt(petId, userId, petName);
     }
 }

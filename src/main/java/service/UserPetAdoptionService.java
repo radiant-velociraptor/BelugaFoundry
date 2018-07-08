@@ -1,6 +1,10 @@
 package service;
 
+import views.Pet;
+
+import java.util.List;
+
 public interface UserPetAdoptionService
 {
-    public boolean adopt(int petId, int userId, String petNickname);
+    public List<Pet> adopt(int petId, int userId, String petNickname);
 }

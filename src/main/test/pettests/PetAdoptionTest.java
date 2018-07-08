@@ -48,6 +48,16 @@ public class PetAdoptionTest
     @Test
     public void testAdoptPet() throws Exception
     {
+        mockMvc.perform(post("/login")
+                .param("emailAddress", "Mel@Mel.com")
+                .param("password", "Mel"))
+                .andDo(print())
+                .andExpect(jsonPath("$.loginMessage", is("OK")))
+                .andExpect(jsonPath("$.userName", is("Mel@Mel.com")))
+                .andExpect(jsonPath("$.user.username", is("Mel")))
+                .andExpect(jsonPath("$.user.emailAddress", is("Mel@Mel.com")))
+                .andExpect(jsonPath("$.user.banned", is("F")));
+
         mockMvc.perform(post("/pet/adopt")
                 .param("petId", "2")
                 .param("userId", "2")
