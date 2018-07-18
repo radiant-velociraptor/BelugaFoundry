@@ -3,6 +3,7 @@ package service.impl;
 import org.springframework.stereotype.Service;
 import service.BattleArenaService;
 import views.Action;
+import views.WinnerView;
 
 @Service("battleArenaService")
 public class BattleArenaServiceImpl implements BattleArenaService
@@ -10,18 +11,18 @@ public class BattleArenaServiceImpl implements BattleArenaService
     @Override
     public void takeAction(Action actionToTake)
     {
-
+        actionToTake.performAction();
     }
 
     @Override
-    public int calculateHP()
+    public int calculateHP(int damage)
     {
-        return 0;
+        return -damage;
     }
 
     @Override
-    public String declareWinner()
+    public WinnerView declareWinner(String username)
     {
-        return null;
+        return new WinnerView(username);
     }
 }

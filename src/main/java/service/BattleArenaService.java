@@ -1,6 +1,7 @@
 package service;
 
 import views.Action;
+import views.WinnerView;
 
 public interface BattleArenaService
 {
@@ -16,12 +17,14 @@ public interface BattleArenaService
      *
      * @return the remaining HP
      */
-    int calculateHP();
+    int calculateHP(int damage);
 
     /**
      * Declare the winner
      *
-     * @return a formatted string declaring the winner
+     * @param username the username of the winner
+     *
+     * @return a winner view
      */
-    String declareWinner();
+    WinnerView declareWinner(String username);
 }

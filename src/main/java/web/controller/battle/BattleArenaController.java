@@ -9,9 +9,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import service.BattleArenaService;
 import service.PetInfoService;
 import service.UserInfoService;
-import views.Pet;
-import views.User;
-import views.UserBattleInfo;
+import views.*;
 
 @Controller
 public class BattleArenaController
@@ -25,15 +23,22 @@ public class BattleArenaController
     @Autowired
     private PetInfoService petInfoService;
 
-    // TODO create a view for this
-    // TODO should include pet info
-    @RequestMapping("/attack")
+    /**
+     * Calculate attack
+     *
+     * @param userId the user id
+     * @param petId the pet id
+     * @param opponentPetDef the opponent's pet's defense
+     *
+     * @return a damage view with the damage caused to the opponent
+     */
+    @RequestMapping("/calculateAttkDamage")
     @RequiresAuthentication
     @ResponseBody
-    public String battle(
+    public DamageView attack(
             @RequestParam(value = "userId", required = true) int userId,
             @RequestParam(value = "petId", required = true) int petId,
-            @RequestParam(value = "currentHP", required = true) int currentHP
+            @RequestParam(value = "opponentPetDef", required = true) int opponentPetDef
     )
     {
         User userInBattle = userInfoService.getUserInfoByUserId(userId);
@@ -42,8 +47,23 @@ public class BattleArenaController
 
         UserBattleInfo userBattleInfo = new UserBattleInfo(userInBattle, petInBattle);
 
-        battleArenaService.takeAction(userBattleInfo.getAttackAction());
+        return new DamageView(userBattleInfo.attack(opponentPetDef));
+    }
 
-        return "";
+    /**
+     * Declare a winner
+     *
+     * @param username the username of the winner
+     *
+     * @return a winner view with the winner's name
+     */
+    @RequestMapping("/winner")
+    @RequiresAuthentication
+    @ResponseBody
+    public WinnerView win(
+            @RequestParam(value = "username", required = true) String username
+    )
+    {
+        return new WinnerView(username);
     }
 }

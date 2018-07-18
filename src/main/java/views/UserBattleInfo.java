@@ -17,8 +17,8 @@ public class UserBattleInfo
         this.petInBattle = petInBattle;
     }
 
-    public Action getAttackAction()
+    public int attack(int opponentPetDef)
     {
-        return attackAction;
+        return attackAction.performAction(petInBattle.getStrength(), opponentPetDef);
     }
 }
